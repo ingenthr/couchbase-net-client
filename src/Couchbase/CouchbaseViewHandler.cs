@@ -33,6 +33,7 @@ namespace Couchbase
         }
 
 		public int TotalRows { get; set; }
+		public bool Error { get; set; }
 
 		public IDictionary<string, object> DebugInfo { get; set; }
 
@@ -57,7 +58,23 @@ namespace Couchbase
 						}
 						else if (jsonReader.Value as string == "total_rows" && jsonReader.Read())
 						{
-							TotalRows = Convert.ToInt32(jsonReader.Value);
+							TotalRows = Convert.ToInt32(jsonReader.Value);                            
+							//HACK
+							if (TotalRows == 0)
+							{
+								while (jsonReader.Read())
+								{
+									if (jsonReader.Value as string == "errors")
+									{
+										Error = true;
+										break;
+									}
+									else
+									{
+										Error = false;
+									}
+								}
+							}
 						}
 						else if (jsonReader.Value as string == "error" && jsonReader.Read())
 						{
@@ -89,22 +106,13 @@ namespace Couchbase
 								var row = rowTransformer(jsonReader);
 								yield return row;
 							}
-
 							while (jsonReader.Read())
 							{
 								if (jsonReader.TokenType == JsonToken.PropertyName
 									&& jsonReader.Depth == 1
 									&& ((string)jsonReader.Value) == "errors")
 								{
-									// we skip the deserialization if the array is null
-									if (jsonReader.TokenType == Newtonsoft.Json.JsonToken.StartArray)
-									{
-										var errors = Json.Parse(jsonReader);
-										var formatted = String.Join("\n", FormatErrors(errors as object[]).ToArray());
-										if (String.IsNullOrEmpty(formatted)) formatted = "<unknown>";
-
-										throw new InvalidOperationException("Cannot read view: " + formatted);
-									}
+									Error = true;
 								}
 							}
 						}

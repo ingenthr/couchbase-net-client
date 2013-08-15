@@ -14,6 +14,11 @@ namespace Couchbase
 		int TotalRows { get; }
 
 		/// <summary>
+		/// Error set true when the cluster has problem executing a view.
+		/// </summary>
+		bool Error { get; }
+
+		/// <summary>
 		/// Debug info when Debug param is true
 		/// </summary>
 		IDictionary<string, object> DebugInfo { get; }

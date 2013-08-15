@@ -25,6 +25,7 @@ namespace Couchbase
 		private object nextKey;
 		private int state;
 		private int totalRows;
+		private bool error;
 
 		private readonly string _pagedViewIdProperty;
 		private readonly string _pagedViewKeyProperty;
@@ -86,6 +87,11 @@ namespace Couchbase
 		{
 			get { return this.totalRows; }
 		}
+        
+		public bool Error
+		{
+			get { return this.error; }
+		}
 
 		private PageInfo LoadData(IView<T> view)
 		{
@@ -97,6 +103,7 @@ namespace Couchbase
 			foreach (var row in view.Limit(this.pageSize + 1))
 			{
 				this.totalRows = view.TotalRows;
+                this.error = view.Error;
 
 				// only store pageSize count of items
 				// the last one will be only stored as a reference to the next page

@@ -40,6 +40,11 @@ namespace Couchbase {
 		public int TotalRows {
 			get { return ViewHandler.TotalRows; }
 		}
+        
+		public bool Error
+		{
+			get { return ViewHandler.Error; }
+		}
 
 		public IDictionary<string, object> DebugInfo {
 			get { return ViewHandler.DebugInfo; }

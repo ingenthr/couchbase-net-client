@@ -14,6 +14,7 @@ namespace Couchbase
 		int PageIndex { get; }
 
 		int TotalRows { get; }
+		bool Error { get; }
 	}
 }
 
